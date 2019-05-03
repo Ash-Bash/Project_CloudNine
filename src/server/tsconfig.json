@@ -4,7 +4,7 @@
       "module": "commonjs", 
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "outDir": "../dist/server"
+      "outDir": "../../dist/server"
     },
     "include": [
             "./src/server/**/*"
