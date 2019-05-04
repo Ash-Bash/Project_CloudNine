@@ -1,27 +1,13 @@
 {
-    "compilerOptions": {
-        "incremental": true,
-        "sourceMap": true,
-        "noImplicitAny": true,
-        "skipLibCheck": true,
-        "module": "commonjs",
-        "target": "es6",
-        "jsx": "react",
-        "typeRoots": [
-            "node_modules/@types"
-        ],
-   
-    },
-    "files": [
-        "./ts/client.tsx"
-    ],
-    "include": [
-        "./ts/**/*"
-    ],
-    "exclude": [
-      "node_modules",
-      "typings",
-      "./../server",
-      "./../server/**/*.ts"
-    ]
+  "extends": "./../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react"
+  },
+  "fileGlob": [
+    "ts/**/*{.ts, .tsx}",
+    "!../server/**/*.ts"
+  ],
+  "exclude": [
+    "../server/**/*.ts"
+  ]
 }

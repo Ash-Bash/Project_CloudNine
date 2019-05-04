@@ -8,14 +8,9 @@ const path = require("path");
 const devMode = process.env.NODE_ENV !== 'production';
 
 var rootPath = __dirname;
-var srcPath = path.resolve(rootPath, './src/client');
-var distPath = path.resolve(rootPath, './dist/client');
-var serverPath = path.resolve(rootPath, './src/server');
-
-const htmlPlugin = new HtmlWebPackPlugin({
-    template: __dirname + "/src/client/views/index.html",
-    filename: "./index.html"
-});
+var srcPath = path.join(rootPath, 'src/client');
+var distPath = path.join(rootPath, 'dist/client');
+var serverPath = path.join(rootPath, 'src/server');
 
 const miniCssPlugin = new MiniCssExtractPlugin({
     // Options similar to the same options in webpackOptions.output
@@ -29,19 +24,10 @@ const copyFilesPlugin = new CopyWebpackPlugin([
 
 var clientTsConfigPath = './src/client/tsconfig.json';
 
-var common = {
-    // TODO: Add common Configuration
-    // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
-
-    module: {
-       
-    },
-};
-
-var clientConfig = {
+module.exports = {
     name: 'client',
     target: 'node-webkit',
+    devtool: "source-map",
     entry: ['./src/client/ts/client.tsx'],
     output: {
         filename: "client.bundle.js",
@@ -108,7 +94,6 @@ var clientConfig = {
     },
 
     plugins: [
-        htmlPlugin, 
         miniCssPlugin, 
         copyFilesPlugin,
         new webpack.IgnorePlugin(/express/),
@@ -129,38 +114,4 @@ var clientConfig = {
     },
     nodeExternals()
     ]
-};
-
-var serverConfig = {
-    name: 'server',
-    target: 'node',
-    entry: {
-        common: './src/server/server.ts'
-    },
-    output: {
-        filename: "server.js",
-        path: __dirname + "/dist/server"
-    },
-    module: {
-        rules: [
-                    // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-                    { 
-                        test: /\.ts?$/, 
-                        /*loader: 'ts-loader?configFileName=./src/server/tsconfig.json',*/
-                        loader: 'awesome-typescript-loader',
-                        options: {
-                            configFileName: './src/server/tsconfig.json'
-                        },
-                    }
-                ]
-    },
-    externals: [
-    nodeExternals()
-    ]
-};
-
-// Return Array of Configurations
-module.exports = [     
-    Object.assign({} , common, clientConfig),
-    Object.assign({} , common, serverConfig)
-];
+}

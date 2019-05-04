@@ -1,4 +1,5 @@
 {
+    "extends": "./../../tsconfig.json",
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs", 
@@ -13,9 +14,6 @@
         "server.ts"
     ],
     "exclude": [
-        "../../node_modules",
-        "../client",
-        "../../typings/browser",
-        "../../typings/browser.d.ts"
+        "../client"
     ]
 }

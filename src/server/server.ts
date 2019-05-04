@@ -1,3 +1,4 @@
+"use strict";
 import * as express from 'express';
 import * as path from 'path';
 
@@ -17,7 +18,7 @@ const server = app.listen(8000, "localhost", () => {
 const clientPath = path.resolve('./', 'dist/client');
 const serverPath = path.resolve('./', 'dist/server');
 
-class App {
+class Server {
     public express : any;
     app = express();
   
@@ -27,14 +28,21 @@ class App {
       console.log("Server Dir: " + serverPath);
       console.log("Client Path: " + clientPath);
 
-      this.express.set('views', clientPath);
-      this.express.engine('html', require('ejs').renderFile);
-      this.express.set('view engine', 'html');
+      this.app.use(express.static(clientPath));
+      this.app.set('views', clientPath);
+      this.app.set('view engine', 'ejs');
+
+      this.config();
 
       this.mountRoutes()
     }
+
+    public config() : void {
+        //add static paths
+        this.app.use(express.static(clientPath));
+    }
   
-    private mountRoutes (): void {
+    private mountRoutes () : void {
       const router = express.Router()
 
       router.get('/', (req, res) => {
@@ -48,11 +56,11 @@ class App {
     
 }
 
-const app = new App();
+const server = new Server();
 
 const port = process.env.PORT || 3000
 
-app.express.listen(port, (err : any) => {
+server.express.listen(port, (err : any) => {
   if (err) {
     return console.log(err)
   }
