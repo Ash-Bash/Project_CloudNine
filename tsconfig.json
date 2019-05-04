@@ -17,10 +17,21 @@
           "es6"
         ]
     },
+    "files": [
+        "./src/client/ts/client.tsx"
+    ],
+    "include": [
+        "./src/client/ts/client.tsx"
+    ],
     "exclude": [
         "node_modules",
+        "dist",
+        "src/server",
+        "src/server/**/*.ts",
+        "src/server/server.ts",
         "typings/browser",
-        "typings/browser.d.ts"
+        "typings/browser.d.ts",
+
     ],
     "atom": {
         "rewriteTsconfig": false

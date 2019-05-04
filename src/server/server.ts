@@ -1,7 +1,5 @@
 import * as express from 'express';
-import { any } from 'prop-types';
-
-const path = require('path');
+import * as path from 'path';
 
 /*const app = express();
  

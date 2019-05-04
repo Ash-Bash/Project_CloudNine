@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+var nodeExternals = require('webpack-node-externals');
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -6,9 +7,15 @@ const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
 const path = require("path");
 const devMode = process.env.NODE_ENV !== 'production';
 
+var rootPath = __dirname;
+var srcPath = path.join(rootPath, 'src/client');
+var distPath = path.join(rootPath, 'dist/client');
+var serverPath = path.join(rootPath, 'src/server');
+
 const htmlPlugin = new HtmlWebPackPlugin({
     template: __dirname + "/src/client/views/index.html",
-    filename: "./index.html"
+    filename: "./index.html",
+    excludeChunks: ['express', './src/server/server.ts']
 });
 
 const miniCssPlugin = new MiniCssExtractPlugin({
@@ -34,6 +41,7 @@ var config = {
 };
 
 var clientConfig = Object.assign({}, config, {
+    name: 'client',
     target: 'web',
     entry: {
         common: './src/client/ts/client.tsx'
@@ -50,7 +58,7 @@ var clientConfig = Object.assign({}, config, {
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".ts", ".tsx", ".js", ".json", ".ejs"],
-        modules: ['./dist/client/', './node_modules']
+        modules: ['./src/client', './node_modules']
         /*plugins: [
             new TsConfigPathsPlugin({clientTsConfigPath})
         ]*/
@@ -61,11 +69,13 @@ var clientConfig = Object.assign({}, config, {
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
             { 
                 test: /\.tsx?$/, 
-                /*loader: 'ts-loader?configFileName=./src/client/tsconfig.json',*/
+                /*loader: 'ts-loader?cacheDirectory',*/
                 loader: 'awesome-typescript-loader',
-                options: {
-                    configFileName: './src/client/tsconfig.json'
-                }
+                options: { 
+                    allowTsInNodeModules: true,
+                    onlyCompileBundledFiles: true
+                 },
+                 exclude: /src\/server\//
             },
             { test: /\.ejs$/, loader: 'ejs-loader?variable=data' },
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
@@ -106,7 +116,11 @@ var clientConfig = Object.assign({}, config, {
     plugins: [
         htmlPlugin, 
         miniCssPlugin, 
-        copyFilesPlugin
+        copyFilesPlugin,
+        new webpack.IgnorePlugin(/express/),
+        new webpack.DefinePlugin({ "global.GENTLY": false }),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin()
     ],
 
     // When importing a module whose path matches one of the following, just
@@ -129,33 +143,31 @@ var serverConfig = Object.assign({}, config, {
         filename: "server.js",
         path: __dirname + "/dist/server"
     },
-
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx", ".js", ".json"]
+        extensions: [".ts", ".tsx", ".js", ".json", ".ejs"],
+        modules: ['./src/server', './node_modules']
         /*plugins: [
             new TsConfigPathsPlugin({clientTsConfigPath})
         ]*/
     },
-
     module: {
         rules: [
                     // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
                     { 
                         test: /\.ts?$/, 
-                        loader: 'ts-loader?configFileName=./src/server/tsconfig.json',
-                        /*loader: 'awesome-typescript-loader',*/
+                        /*loader: 'ts-loader?configFileName=./src/server/tsconfig.json',*/
+                        loader: 'awesome-typescript-loader',
                         options: {
-                            
+                            configFileName: './src/server/tsconfig.json'
                         },
                         exclude: '/src/client/'
-                    },
-                    { test: /\.ejs$/, loader: 'ejs-loader?variable=data' },
+                    }
                 ]
     }
 });
 
 // Return Array of Configurations
 module.exports = [
-    clientConfig, serverConfig,       
+    serverConfig, clientConfig,       
 ];
