@@ -1,4 +1,7 @@
 import * as express from 'express';
+import { any } from 'prop-types';
+
+const path = require('path');
 
 /*const app = express();
  
@@ -13,20 +16,34 @@ const server = app.listen(8000, "localhost", () => {
    console.log('Listening on http://localhost:' + port);
 });*/
 
+const clientPath = path.resolve('./', 'dist/client');
+const serverPath = path.resolve('./', 'dist/server');
+
 class App {
-    public express
+    public express : any;
+    app = express();
   
     constructor () {
       this.express = express()
+
+      console.log("Server Dir: " + serverPath);
+      console.log("Client Path: " + clientPath);
+
+      this.express.set('views', clientPath);
+      this.express.engine('html', require('ejs').renderFile);
+      this.express.set('view engine', 'html');
+
       this.mountRoutes()
     }
   
     private mountRoutes (): void {
       const router = express.Router()
+
       router.get('/', (req, res) => {
-        res.json({
-          message: 'Hello World!'
-        })
+        res.send('Hello from Express');
+      })
+      router.get('/player', (req, res) => {
+        res.render('index');
       })
       this.express.use('/', router)
     }
@@ -37,7 +54,7 @@ const app = new App();
 
 const port = process.env.PORT || 3000
 
-app.express.listen(port, (err) => {
+app.express.listen(port, (err : any) => {
   if (err) {
     return console.log(err)
   }

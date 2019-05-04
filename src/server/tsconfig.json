@@ -3,14 +3,12 @@
       "target": "es5",
       "module": "commonjs", 
       "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "outDir": "../../dist/server"
+      "experimentalDecorators": true
     },
-    "include": [
-            "./src/server/**/*"
-    ],
     "exclude": [
-        "node_modules", 
-        "../client"
+        "../../node_modules",
+        "../client",
+        "../../typings/browser",
+        "../../typings/browser.d.ts"
     ]
 }

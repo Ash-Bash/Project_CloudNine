@@ -8,13 +8,13 @@ const devMode = process.env.NODE_ENV !== 'production';
 
 const htmlPlugin = new HtmlWebPackPlugin({
     template: __dirname + "/src/client/views/index.html",
-    filename: "./client/index.html"
+    filename: "./index.html"
 });
 
 const miniCssPlugin = new MiniCssExtractPlugin({
     // Options similar to the same options in webpackOptions.output
     // both options are optional
-    filename: "app.min.css"
+    filename: "client.min.css"
 });
 
 const copyFilesPlugin = new CopyWebpackPlugin([
@@ -23,21 +23,34 @@ const copyFilesPlugin = new CopyWebpackPlugin([
 
 var clientTsConfigPath = './src/client/tsconfig.json';
 
-module.exports = {
+var config = {
+    // TODO: Add common Configuration
+    // Enable sourcemaps for debugging webpack's output.
+    devtool: "source-map",
+
+    module: {
+       
+    },
+};
+
+var clientConfig = Object.assign({}, config, {
+    target: 'web',
     entry: {
         common: './src/client/ts/client.tsx'
     },
     output: {
-        filename: "app.bundle.js",
+        filename: "client.bundle.js",
         path: __dirname + "/dist/client"
     },
-
-    // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
-
+    node: {
+        fs: 'empty',
+        net: 'empty',
+        tls: 'empty'
+    },
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx", ".js", ".json"]
+        extensions: [".ts", ".tsx", ".js", ".json", ".ejs"],
+        modules: ['./dist/client/', './node_modules']
         /*plugins: [
             new TsConfigPathsPlugin({clientTsConfigPath})
         ]*/
@@ -48,12 +61,13 @@ module.exports = {
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
             { 
                 test: /\.tsx?$/, 
+                /*loader: 'ts-loader?configFileName=./src/client/tsconfig.json',*/
                 loader: 'awesome-typescript-loader',
                 options: {
-                    "configFileName": clientTsConfigPath
+                    configFileName: './src/client/tsconfig.json'
                 }
-             },
-
+            },
+            { test: /\.ejs$/, loader: 'ejs-loader?variable=data' },
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
             
@@ -76,7 +90,7 @@ module.exports = {
                       "includePaths": [
                         path.resolve(__dirname, 'node_modules'),
                         path.resolve(__dirname, 'dist'),
-                        path.resolve(__dirname, 'src')
+                        path.resolve(__dirname, 'src/client')
                       ]
                     }
                   }
@@ -103,4 +117,45 @@ module.exports = {
         "react": "React",
         "react-dom": "ReactDOM"
     }
-};
+});
+
+var serverConfig = Object.assign({}, config, {
+    name: 'server',
+    target: 'node',
+    entry: {
+        common: './src/server/server.ts'
+    },
+    output: {
+        filename: "server.js",
+        path: __dirname + "/dist/server"
+    },
+
+    resolve: {
+        // Add '.ts' and '.tsx' as resolvable extensions.
+        extensions: [".ts", ".tsx", ".js", ".json"]
+        /*plugins: [
+            new TsConfigPathsPlugin({clientTsConfigPath})
+        ]*/
+    },
+
+    module: {
+        rules: [
+                    // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
+                    { 
+                        test: /\.ts?$/, 
+                        loader: 'ts-loader?configFileName=./src/server/tsconfig.json',
+                        /*loader: 'awesome-typescript-loader',*/
+                        options: {
+                            
+                        },
+                        exclude: '/src/client/'
+                    },
+                    { test: /\.ejs$/, loader: 'ejs-loader?variable=data' },
+                ]
+    }
+});
+
+// Return Array of Configurations
+module.exports = [
+    clientConfig, serverConfig,       
+];

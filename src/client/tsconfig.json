@@ -1,17 +1,24 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/client",
+        "incremental": true,
+        "outDir": "./../../dist/client",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "commonjs",
         "target": "es6",
-        "jsx": "react"
+        "jsx": "react",
+        "typeRoots": [
+            "../../node_modules/@types"
+        ],
+   
     },
-    "include": [
-        "./src/client/**/*"
+    "files": [
+        "ts/client.tsx"
     ],
-    "exclude": [ 
-        "node_modules", 
-        "server"
+    "exclude": [
+        "../../node_modules",
+        "../server",
+        "../../typings/browser",
+        "../../typings/browser.d.ts"
     ]
 }
