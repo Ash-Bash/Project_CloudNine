@@ -3,6 +3,7 @@ var nodeExternals = require('webpack-node-externals');
 module.exports = {
     name: 'server',
     target: 'node',
+    mode: 'development',
     entry: {
         common: './src/server/server.ts'
     },

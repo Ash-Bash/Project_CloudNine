@@ -29,10 +29,16 @@ gulp.task("copy:assets", function () {
         .pipe(gulp.dest("dist/client"));
 });
 
-gulp.task("compile:client", function () {  
-    return gulp.src('src/client/ts/client.tsx')
-    .pipe(webpack( require('./webpack.client.js') ))
-    .pipe(gulp.dest('dist/client'));
+gulp.task("copy:all", gulp.series(gulp.parallel(['copy:html', 'copy:assets'])));
+
+gulp.task("compile:client", function () {
+    var tsproject = ts.createProject('./src/client/tsconfig.json');
+    return tsproject
+        .src()
+        .pipe(sourcemaps.init())
+        .pipe(tsproject()).js
+        .pipe(sourcemaps.write('./sourcemaps'))
+        .pipe(gulp.dest('./tmp/js'));
 });
 
 gulp.task("compile:server", function () {  
@@ -54,16 +60,6 @@ gulp.task("clean", function () {
         .pipe(clean());
 });
 
-gulp.task("transpile:client", function () {
-    var tsproject = ts.createProject('./src/client/tsconfig.json');
-    return tsproject
-        .src()
-        .pipe(sourcemaps.init())
-        .pipe(tsproject()).js
-        .pipe(sourcemaps.write('./sourcemaps'))
-        .pipe(gulp.dest('./tmp/js'));
-});
-
 gulp.task("min:client", function () {
     return gulp
         .src('./tmp/js/Client.js')
@@ -81,4 +77,4 @@ gulp.task("watch", function () {
 });
 
 // build Task
-gulp.task('build', gulp.series('clean', 'compile:server', 'transpile:client', 'min:client', 'copy:html'));
+gulp.task('build:all', gulp.series('compile:all', 'min:client', 'copy:html'));
