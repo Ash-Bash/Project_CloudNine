@@ -8,9 +8,6 @@ const path = require("path");
 const devMode = process.env.NODE_ENV !== 'production';
 
 var rootPath = __dirname;
-var srcPath = path.join(rootPath, 'src/client');
-var distPath = path.join(rootPath, 'dist/client');
-var serverPath = path.join(rootPath, 'src/server');
 
 const miniCssPlugin = new MiniCssExtractPlugin({
     // Options similar to the same options in webpackOptions.output
@@ -26,7 +23,7 @@ var clientTsConfigPath = './src/client/tsconfig.json';
 
 module.exports = {
     name: 'client',
-    target: 'node-webkit',
+    target: 'web',
     devtool: "source-map",
     entry: ['./src/client/ts/client.tsx'],
     output: {
@@ -111,7 +108,6 @@ module.exports = {
         "react": "React",
         "react-dom": "ReactDOM",
         
-    },
-    nodeExternals()
+    }
     ]
 }

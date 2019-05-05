@@ -1,6 +1,7 @@
 "use strict";
 import * as express from 'express';
 import * as path from 'path';
+import * as engines from 'consolidate';
 
 /*const app = express();
  
@@ -15,6 +16,7 @@ const server = app.listen(8000, "localhost", () => {
    console.log('Listening on http://localhost:' + port);
 });*/
 
+const clientPrefixDir = '../dist/client/';
 const clientPath = path.resolve('./', 'dist/client');
 const serverPath = path.resolve('./', 'dist/server');
 
@@ -28,9 +30,10 @@ class Server {
       console.log("Server Dir: " + serverPath);
       console.log("Client Path: " + clientPath);
 
-      this.app.use(express.static(clientPath));
+      this.app.use('/scripts' , express.static(clientPath));
       this.app.set('views', clientPath);
-      this.app.set('view engine', 'ejs');
+      this.app.engine('pug', engines.pug);
+      this.app.set('view engine', 'pug');
 
       this.config();
 
@@ -39,7 +42,7 @@ class Server {
 
     public config() : void {
         //add static paths
-        this.app.use(express.static(clientPath));
+        //this.app.use(express.static(clientPath));
     }
   
     private mountRoutes () : void {
@@ -49,7 +52,7 @@ class Server {
         res.send('Hello from Express');
       })
       router.get('/player', (req, res) => {
-        res.render('index');
+        res.render(clientPrefixDir + 'index.pug');
       })
       this.express.use('/', router)
     }
@@ -59,7 +62,8 @@ class Server {
 const server = new Server();
 
 const port = process.env.PORT || 3000
-
+server.express.use('/', express.static(clientPath));
+//server.express.use('/', express.static(clientPath));
 server.express.listen(port, (err : any) => {
   if (err) {
     return console.log(err)
